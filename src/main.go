@@ -1,8 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/url-shortener/config"
+)
 
 func main() {
-	fmt.Println("hello")
+	config.Init()
+
+	fmt.Println(config.Log())
 	return
 }
