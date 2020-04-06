@@ -2,8 +2,10 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/vladikan/url-shortener/config"
@@ -17,12 +19,27 @@ import (
 var srv *http.Server
 
 // Start will setup http service
-func Start(st *config.HostSettings) error {
-	srv = &http.Server{
-		Addr:    fmt.Sprintf(":%d", st.Port),
-		Handler: newRouter(),
-	}
+func Start(st *config.HostSettings) {
+	srv = &http.Server{Addr: st.Addr, Handler: newRouter()}
+	logger.Infof("Server starting at %s", srv.Addr)
 
+	// Hook for system signal
+	ctx, cancel := context.WithCancel(context.Background())
+	go func() {
+		stop := make(chan os.Signal, 1)
+		signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+		<-stop
+		logger.Warn("System interrupt signal")
+		cancel()
+	}()
+
+	// Call shutdown explicitly
+	go func() {
+		<-ctx.Done()
+		shutdown()
+	}()
+
+	// Configure and start
 	var err error
 	if st.Ssl {
 		m := &autocert.Manager{
@@ -37,27 +54,25 @@ func Start(st *config.HostSettings) error {
 		err = srv.ListenAndServe()
 	}
 
-	if err != nil {
-		logger.Fatal(fmt.Sprintf("Failed to start server at %d, %s", st.Port, err))
-	}
-
-	logger.Info(fmt.Sprintf("Server started at %d", st.Port))
-	return err
+	logger.Warnf("Server was terminated or failed to start, %s", err)
 }
 
-// Shutdown will try to stop server gracefully
-func Shutdown() {
+func shutdown() {
 	logger.Info("Shutdown server")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	srv.Shutdown(ctx)
+
+	if err := srv.Shutdown(ctx); err != nil {
+		logger.Warnf("Server shutdown error, %s", err)
+	}
 }
 
 func newRouter() http.Handler {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
+	r.Use(loggerMiddleware)
 	r.Use(middleware.Timeout(5 * time.Second))
 
 	r.Get("/{code}", GetURI)

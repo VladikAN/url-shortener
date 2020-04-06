@@ -13,7 +13,7 @@ type LogSettings struct {
 
 // HostSettings holds host specific settings
 type HostSettings struct {
-	Port      int
+	Addr      string
 	Ssl       bool
 	Whitelist []string
 }

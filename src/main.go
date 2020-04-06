@@ -13,5 +13,4 @@ func main() {
 	defer logger.Flush()
 
 	service.Start(config.Host())
-	defer service.Shutdown()
 }
