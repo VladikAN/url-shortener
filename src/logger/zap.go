@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"github.com/url-shortener/config"
+	"github.com/vladikan/url-shortener/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -10,7 +10,7 @@ var logger *zap.Logger
 var sugar *zap.SugaredLogger
 
 // Init will setup logger
-func Init(st config.LogSettings) {
+func Init(st *config.LogSettings) {
 	cfg := zap.NewProductionConfig()
 	cfg.Level = zap.NewAtomicLevelAt(toZapLevel(st.Level))
 
@@ -23,19 +23,24 @@ func Init(st config.LogSettings) {
 	sugar = logger.Sugar()
 }
 
+// Fatal logs message with Fatal level
+func Fatal(msg string) {
+	sugar.Fatal(msg)
+}
+
 // Info logs message with Info level
-func Info(msg string, obj ...interface{}) {
-	sugar.Infow(msg, obj)
+func Info(msg string) {
+	sugar.Info(msg)
 }
 
 // Warn logs message with Warn level
-func Warn(msg string, obj ...interface{}) {
-	sugar.Warnw(msg, obj)
+func Warn(msg string) {
+	sugar.Warn(msg)
 }
 
 // Debug logs message with Debug level
-func Debug(msg string, obj ...interface{}) {
-	sugar.Debugw(msg, obj)
+func Debug(msg string) {
+	sugar.Debug(msg)
 }
 
 // Flush will flush zap buffers

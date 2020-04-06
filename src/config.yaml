@@ -2,7 +2,9 @@ log:
     level: info
 
 host:
-    port: 80
+    port: 8080
+    ssl: false
+    whitelist: example.com, www.example.com
 
 service:
     allowed: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
