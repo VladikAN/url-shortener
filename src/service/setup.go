@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/vladikan/url-shortener/config"
+	"github.com/vladikan/url-shortener/db"
 	"github.com/vladikan/url-shortener/logger"
 
 	"github.com/go-chi/chi"
@@ -33,13 +34,16 @@ func Start(st *config.HostSettings) {
 		cancel()
 	}()
 
-	// Call shutdown explicitly
+	// Call shutdown service and db explicitly
 	go func() {
 		<-ctx.Done()
 		shutdown()
 	}()
 
-	// Configure and start
+	// Configure and start db
+	db.Open()
+
+	// Configure and start service
 	var err error
 	if st.Ssl {
 		m := &autocert.Manager{
@@ -66,6 +70,8 @@ func shutdown() {
 	if err := srv.Shutdown(ctx); err != nil {
 		logger.Warnf("Server shutdown error, %s", err)
 	}
+
+	db.Close()
 }
 
 func newRouter() http.Handler {
