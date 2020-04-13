@@ -1,6 +1,7 @@
 package db
 
 import (
+	"encoding/binary"
 	"sync"
 	"time"
 
@@ -33,12 +34,12 @@ func Close() {
 }
 
 // Read will read stored value by its key
-func Read(key string) string {
+func Read(key uint64) string {
 	var value string
 
 	db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucketName))
-		v := b.Get([]byte(key))
+		v := b.Get(itob(key))
 
 		if v != nil && len(v) > 0 {
 			value = string(v)
@@ -51,16 +52,25 @@ func Read(key string) string {
 }
 
 // Write will store new key-value pair
-func Write(key string, value string) error {
+func Write(value string) (uint64, error) {
 	mux.Lock()
 
+	var id uint64
 	err := db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucketName))
-		err := b.Put([]byte(key), []byte(value))
+		id, _ = b.NextSequence()
+
+		err := b.Put(itob(id), []byte(value))
 		return err
 	})
 
 	mux.Unlock()
 
-	return err
+	return id, err
+}
+
+func itob(v uint64) []byte {
+	b := make([]byte, 8)
+	binary.BigEndian.PutUint64(b, uint64(v))
+	return b
 }

@@ -64,6 +64,7 @@ func Start(st *config.HostSettings) {
 func shutdown() {
 	logger.Info("Shutdown server")
 
+	// Close service
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -71,6 +72,7 @@ func shutdown() {
 		logger.Warnf("Server shutdown error, %s", err)
 	}
 
+	// Close db
 	db.Close()
 }
 

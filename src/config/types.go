@@ -20,5 +20,10 @@ type HostSettings struct {
 
 // ServiceSettings holds service specific settings
 type ServiceSettings struct {
-	Allowed string
+	Chars string
+}
+
+// GetBase returns number of allowed chars
+func (s *ServiceSettings) GetBase() int {
+	return len(s.Chars)
 }
