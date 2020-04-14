@@ -36,9 +36,10 @@ func Close() {
 // Read will read stored value by its key
 func Read(key uint64) string {
 	var value string
+	logger.Debugf("Request for %d", key)
 
 	db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(bucketName))
+		b, _ := tx.CreateBucketIfNotExists([]byte(bucketName))
 		v := b.Get(itob(key))
 
 		if v != nil && len(v) > 0 {
@@ -57,7 +58,7 @@ func Write(value string) (uint64, error) {
 
 	var id uint64
 	err := db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(bucketName))
+		b, _ := tx.CreateBucketIfNotExists([]byte(bucketName))
 		id, _ = b.NextSequence()
 
 		err := b.Put(itob(id), []byte(value))

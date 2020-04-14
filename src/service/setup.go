@@ -84,7 +84,7 @@ func newRouter() http.Handler {
 	r.Use(middleware.Timeout(5 * time.Second))
 
 	r.Get("/{code}", GetURI)
-	r.Put("/{addr}", PutURI)
+	r.Put("/", PutURI)
 
 	return r
 }

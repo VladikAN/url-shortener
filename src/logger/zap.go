@@ -30,7 +30,7 @@ func Fatal(msg string) {
 
 // Fatalf logs formatted message with Fatal level
 func Fatalf(msg string, arg ...interface{}) {
-	sugar.Fatalf(msg, arg)
+	sugar.Fatalf(msg, arg...)
 }
 
 // Info logs message with Info level
@@ -40,7 +40,7 @@ func Info(msg string) {
 
 // Infof logs formatted message with Info level
 func Infof(msg string, arg ...interface{}) {
-	sugar.Infof(msg, arg)
+	sugar.Infof(msg, arg...)
 }
 
 // Warn logs message with Warn level
@@ -50,7 +50,7 @@ func Warn(msg string) {
 
 // Warnf logs formatted message with Warn level
 func Warnf(msg string, arg ...interface{}) {
-	sugar.Warnf(msg, arg)
+	sugar.Warnf(msg, arg...)
 }
 
 // Debug logs message with Debug level
@@ -60,7 +60,7 @@ func Debug(msg string) {
 
 // Debugf logs formatted message with Debug level
 func Debugf(msg string, arg ...interface{}) {
-	sugar.Debugf(msg, arg)
+	sugar.Debugf(msg, arg...)
 }
 
 // Debugw logs enriched message with Debug level

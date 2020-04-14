@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/vladikan/url-shortener/db"
+	"github.com/vladikan/url-shortener/logger"
 
 	"github.com/go-chi/chi"
 )
@@ -12,17 +13,44 @@ import (
 // GetURI will resolve stored address by the code
 func GetURI(w http.ResponseWriter, r *http.Request) {
 	code := chi.URLParam(r, "code")
-	idx, _ := Decode(code)
-	addr := db.Read(idx)
+	if len(code) == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Missed request uri code, domain.com/[code]"))
+		return
+	}
 
-	w.Write([]byte(fmt.Sprintf("Your addr is: %s", addr)))
+	idx, err := Decode(code)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf("Validation error, %s", err)))
+		return
+	}
+
+	addr := db.Read(idx)
+	logger.Debugf("Incomming request for %s code resolved by %s and %d index", code, addr, idx)
+	http.Redirect(w, r, addr, http.StatusMovedPermanently)
 }
 
 // PutURI will store new address and return it's code
 func PutURI(w http.ResponseWriter, r *http.Request) {
-	addr := chi.URLParam(r, "addr")
-	idx, _ := db.Write(addr)
-	code := Encode(idx)
+	addr := r.FormValue("addr")
+	if len(addr) == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Missed request `addr` parameter"))
+		return
+	}
 
-	w.Write([]byte(fmt.Sprintf("Your code is: %s", code)))
+	idx, err := db.Write(addr)
+	if err != nil {
+		logger.Warnf("Error occured while performing write operation, %s", err)
+
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	code := Encode(idx)
+	logger.Debugf("Put request for addr %s completed with %s code and %d index", addr, code, idx)
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(code))
 }
