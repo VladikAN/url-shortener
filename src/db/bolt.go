@@ -13,6 +13,7 @@ var db *bolt.DB
 var mux sync.Mutex
 
 const bucketName = "urls"
+const bucketOffset = 1024
 
 // Open will open bolt db connection
 func Open() {
@@ -36,10 +37,13 @@ func Close() {
 // Read will read stored value by its key
 func Read(key uint64) string {
 	var value string
-	logger.Debugf("Request for %d", key)
 
 	db.View(func(tx *bolt.Tx) error {
-		b, _ := tx.CreateBucketIfNotExists([]byte(bucketName))
+		b := tx.Bucket([]byte(bucketName))
+		if b == nil {
+			return nil // first call nothing in store yet
+		}
+
 		v := b.Get(itob(key))
 
 		if v != nil && len(v) > 0 {
@@ -60,6 +64,7 @@ func Write(value string) (uint64, error) {
 	err := db.Update(func(tx *bolt.Tx) error {
 		b, _ := tx.CreateBucketIfNotExists([]byte(bucketName))
 		id, _ = b.NextSequence()
+		id += bucketOffset
 
 		err := b.Put(itob(id), []byte(value))
 		return err

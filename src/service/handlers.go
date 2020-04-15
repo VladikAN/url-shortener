@@ -27,7 +27,12 @@ func GetURI(w http.ResponseWriter, r *http.Request) {
 	}
 
 	addr := db.Read(idx)
-	logger.Debugf("Incomming request for %s code resolved by %s and %d index", code, addr, idx)
+	if len(addr) == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf("No record for this code `%s`", code)))
+	}
+
+	logger.Debugf("Incomming request for `%s` code resolved by `%s` and `%d` index", code, addr, idx)
 	http.Redirect(w, r, addr, http.StatusMovedPermanently)
 }
 
@@ -49,7 +54,7 @@ func PutURI(w http.ResponseWriter, r *http.Request) {
 	}
 
 	code := Encode(idx)
-	logger.Debugf("Put request for addr %s completed with %s code and %d index", addr, code, idx)
+	logger.Debugf("Put request for addr `%s` completed with `%s` code and `%d` index", addr, code, idx)
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(code))
