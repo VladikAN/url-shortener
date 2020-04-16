@@ -13,7 +13,7 @@ var db *bolt.DB
 var mux sync.Mutex
 
 const bucketName = "urls"
-const bucketOffset = 1024
+const bucketOffset = 1024 * 1024
 
 // Open will open bolt db connection
 func Open() {

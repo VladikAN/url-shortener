@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/vladikan/url-shortener/config"
 	"github.com/vladikan/url-shortener/db"
 	"github.com/vladikan/url-shortener/logger"
 
@@ -19,7 +20,8 @@ func GetURI(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idx, err := Decode(code)
+	cfg := config.Service()
+	idx, err := Decode(code, cfg)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintf("Validation error, %s", err)))
@@ -53,7 +55,8 @@ func PutURI(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	code := Encode(idx)
+	cfg := config.Service()
+	code := Encode(idx, cfg)
 	logger.Debugf("Put request for addr `%s` completed with `%s` code and `%d` index", addr, code, idx)
 
 	w.WriteHeader(http.StatusOK)

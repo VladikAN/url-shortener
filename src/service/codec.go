@@ -9,8 +9,7 @@ import (
 )
 
 // Encode will convert base10 to baseN (configured)
-func Encode(num uint64) string {
-	cfg := config.Service()
+func Encode(num uint64, cfg *config.ServiceSettings) string {
 	base := cfg.GetBase()
 
 	b := make([]byte, 0)
@@ -27,8 +26,7 @@ func Encode(num uint64) string {
 }
 
 // Decode will convert baseN (configured) to base10
-func Decode(s string) (uint64, error) {
-	cfg := config.Service()
+func Decode(s string, cfg *config.ServiceSettings) (uint64, error) {
 	base := cfg.GetBase()
 
 	var r uint64
