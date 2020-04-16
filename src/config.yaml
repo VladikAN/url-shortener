@@ -1,0 +1,10 @@
+log:
+    level: debug
+
+host:
+    addr: :8080
+    ssl: false
+    whitelist: example.com, www.example.com
+
+service:
+    chars: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
