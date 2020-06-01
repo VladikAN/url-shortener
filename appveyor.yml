@@ -8,7 +8,9 @@ image: Ubuntu1804
 build_script:
 - sh: >-
     go version
+
     cd ./src
+    
     go build ./main.go
 
 test_script:
