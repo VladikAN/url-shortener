@@ -9,10 +9,11 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
 FROM alpine:latest
 LABEL maintainer="https://github.com/vladikan/url-shortener"
 WORKDIR /root/
-COPY --from=builder src/app src/config.yml.
+COPY --from=builder src/app .
+COPY --from=builder src/config.yaml .
 
-ENV US_log_level="info" \
-    US_host_port=":80"
+ENV US_LOG_LEVEL="info" \
+    US_HOST_ADDR=":80"
 
 EXPOSE 80
 ENTRYPOINT ["./app"]
