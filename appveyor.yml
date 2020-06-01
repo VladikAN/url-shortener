@@ -1,0 +1,15 @@
+version: 1.0.0-{build}
+
+pull_requests:
+  do_not_increment_build_number: true
+
+image: Ubuntu1804
+
+build_script:
+- sh: >-
+    go version
+    cd ./src
+    go build ./main.go
+
+test_script:
+- sh: go test ./...
