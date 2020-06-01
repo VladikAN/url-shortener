@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	config.Init()
+	config.Init("")
 
 	logger.Init(config.Log())
 	defer logger.Flush()

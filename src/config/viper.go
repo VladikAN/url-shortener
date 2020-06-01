@@ -7,10 +7,11 @@ import (
 )
 
 // Init is called first to read all settings
-func Init() {
+func Init(path string) {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath("./")
+	viper.AddConfigPath(".")
+	viper.AddConfigPath(path)
 
 	err := viper.ReadInConfig()
 	if err != nil {
