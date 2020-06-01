@@ -13,6 +13,8 @@ func Init(path string) {
 	viper.AddConfigPath(".")
 	viper.AddConfigPath(path)
 
+	viper.SetEnvPrefix("us")
+
 	err := viper.ReadInConfig()
 	if err != nil {
 		panic(fmt.Errorf("error on init config: %s", err))
