@@ -10,7 +10,7 @@ const expectedIdx = 1048585
 const expectedCode = "eyWP"
 const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-func EncodeToString(t *testing.T) {
+func TestEncodeToString(t *testing.T) {
 	cfg := config.ServiceSettings{Chars: chars}
 	rst := Encode(expectedIdx, &cfg)
 	if rst != expectedCode {
@@ -18,7 +18,7 @@ func EncodeToString(t *testing.T) {
 	}
 }
 
-func DecodeToString(t *testing.T) {
+func TestDecodeToString(t *testing.T) {
 	cfg := config.ServiceSettings{Chars: chars}
 	rst, _ := Decode(expectedCode, &cfg)
 	if rst != expectedIdx {

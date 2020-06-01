@@ -18,6 +18,7 @@ import (
 )
 
 var srv *http.Server
+var srvDb db.Database
 
 // Start will setup http service
 func Start(st *config.HostSettings) {
@@ -41,7 +42,7 @@ func Start(st *config.HostSettings) {
 	}()
 
 	// Configure and start db
-	db.Open()
+	srvDb = db.Open()
 
 	// Configure and start service
 	var err error
@@ -73,7 +74,7 @@ func shutdown() {
 	}
 
 	// Close db
-	db.Close()
+	db.Close(srvDb)
 }
 
 func newRouter() http.Handler {
@@ -83,6 +84,7 @@ func newRouter() http.Handler {
 	r.Use(loggerMiddleware)
 	r.Use(middleware.Timeout(5 * time.Second))
 
+	r.Get("/", InfoURI)
 	r.Get("/{code}", GetURI)
 	r.Put("/", PutURI)
 

@@ -2,43 +2,37 @@ package db
 
 import (
 	"encoding/binary"
-	"sync"
 	"time"
 
 	"github.com/boltdb/bolt"
 	"github.com/vladikan/url-shortener/logger"
 )
 
-var db *bolt.DB
-var mux sync.Mutex
-
-const bucketName = "urls"
-const bucketOffset = 1024 * 1024
-
 // Open will open bolt db connection
-func Open() {
+func Open() *ServerDb {
 	blt, err := bolt.Open("urls.db", 0600, &bolt.Options{Timeout: 1 * time.Second})
 	if err != nil {
 		logger.Fatalf("Error while opening database, %s", err)
 	}
 
 	logger.Debug("Database opened")
-	db = blt
+	return &ServerDb{db: blt}
 }
 
 // Close will close bolt db connection
-func Close() {
-	err := db.Close()
+func Close(db Database) {
+	blt, _ := db.(ServerDb)
+	err := blt.db.Close()
 	if err != nil {
 		logger.Fatalf("Error while closing database, %s")
 	}
 }
 
 // Read will read stored value by its key
-func Read(key uint64) string {
+func (db ServerDb) Read(key uint64) string {
 	var value string
 
-	db.View(func(tx *bolt.Tx) error {
+	db.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucketName))
 		if b == nil {
 			return nil // first call nothing in store yet
@@ -57,11 +51,11 @@ func Read(key uint64) string {
 }
 
 // Write will store new key-value pair
-func Write(value string) (uint64, error) {
-	mux.Lock()
+func (db ServerDb) Write(value string) (uint64, error) {
+	db.mux.Lock()
 
 	var id uint64
-	err := db.Update(func(tx *bolt.Tx) error {
+	err := db.db.Update(func(tx *bolt.Tx) error {
 		b, _ := tx.CreateBucketIfNotExists([]byte(bucketName))
 		id, _ = b.NextSequence()
 		id += bucketOffset
@@ -70,7 +64,7 @@ func Write(value string) (uint64, error) {
 		return err
 	})
 
-	mux.Unlock()
+	db.mux.Unlock()
 
 	return id, err
 }
