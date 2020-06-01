@@ -1,8 +1,8 @@
 log:
-    level: debug
+    level: info
 
 host:
-    addr: :8080
+    addr: :80
     ssl: false
     whitelist: example.com, www.example.com
 
