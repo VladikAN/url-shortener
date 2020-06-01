@@ -55,7 +55,6 @@ func PutURI(w http.ResponseWriter, r *http.Request) {
 	idx, err := srvDb.Write(addr)
 	if err != nil {
 		logger.Warnf("Error occured while performing write operation, %s", err)
-
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
