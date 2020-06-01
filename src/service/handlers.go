@@ -32,6 +32,7 @@ func GetURI(w http.ResponseWriter, r *http.Request) {
 	if len(addr) == 0 {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintf("No record for this code `%s`", code)))
+		return
 	}
 
 	logger.Debugf("Incomming request for `%s` code resolved by `%s` and `%d` index", code, addr, idx)

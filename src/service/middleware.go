@@ -20,8 +20,8 @@ func loggerMiddleware(next http.Handler) http.Handler {
 		fields = append(fields, "uri", r.RequestURI)
 		fields = append(fields, "verb", r.Method)
 
-		logger.Debugw("Started", fields...)
+		logger.Debugw("Request started", fields...)
 		next.ServeHTTP(w, r)
-		logger.Debugw("Completed", fields...)
+		logger.Debugw("Request completed", fields...)
 	})
 }
