@@ -54,6 +54,8 @@ func Start(st *config.HostSettings) {
 		}
 
 		srv.TLSConfig = m.TLSConfig()
+		logger.Infof("Setting up SSL for the whitelist", st.Whitelist)
+
 		err = srv.ListenAndServeTLS("", "")
 	} else {
 		err = srv.ListenAndServe()

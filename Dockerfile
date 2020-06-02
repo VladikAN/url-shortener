@@ -13,7 +13,9 @@ COPY --from=builder src/app .
 COPY --from=builder src/config.yaml .
 
 ENV US_LOG_LEVEL="info" \
-    US_HOST_ADDR=":80"
+    US_HOST_ADDR=":443" \
+    US_HOST_SSL="true"
 
 EXPOSE 80
+VOLUME ["/autocert"]
 ENTRYPOINT ["./app"]
