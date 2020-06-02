@@ -17,5 +17,6 @@ ENV US_LOG_LEVEL="info" \
     US_HOST_SSL="true"
 
 EXPOSE 443
+EXPOSE 80
 VOLUME ["/autocert"]
 ENTRYPOINT ["./app"]
