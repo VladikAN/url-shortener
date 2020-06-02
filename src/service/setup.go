@@ -22,9 +22,6 @@ var srvDb db.Database
 
 // Start will setup http service
 func Start(st *config.HostSettings) {
-	srv = &http.Server{Addr: st.Addr, Handler: newRouter()}
-	logger.Infof("Server starting at %s", srv.Addr)
-
 	// Hook for system signal
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
@@ -45,6 +42,9 @@ func Start(st *config.HostSettings) {
 	srvDb = db.Open()
 
 	// Configure and start service
+	srv = &http.Server{Addr: st.Addr, Handler: newRouter()}
+	logger.Infof("Server starting at %s", srv.Addr)
+
 	var err error
 	if st.Ssl {
 		m := &autocert.Manager{
@@ -54,6 +54,10 @@ func Start(st *config.HostSettings) {
 		}
 
 		srv.TLSConfig = m.TLSConfig()
+		logger.Infof("Setting up SSL for the whitelist")
+
+		// serve HTTP, which will redirect automatically to HTTPS
+		go http.ListenAndServe(":http", m.HTTPHandler(nil))
 		err = srv.ListenAndServeTLS("", "")
 	} else {
 		err = srv.ListenAndServe()

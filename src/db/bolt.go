@@ -21,7 +21,7 @@ func Open() *ServerDb {
 
 // Close will close bolt db connection
 func Close(db Database) {
-	blt, _ := db.(ServerDb)
+	blt, _ := db.(*ServerDb)
 	err := blt.db.Close()
 	if err != nil {
 		logger.Fatalf("Error while closing database, %s")
