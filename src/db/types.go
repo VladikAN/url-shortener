@@ -1,8 +1,6 @@
 package db
 
 import (
-	"sync"
-
 	"github.com/boltdb/bolt"
 )
 
@@ -11,8 +9,7 @@ const bucketOffset = 1024 * 1024
 
 // ServerDb holds current database connection
 type ServerDb struct {
-	db  *bolt.DB
-	mux *sync.Mutex
+	db *bolt.DB
 }
 
 // Database is an generic interface for db operations
