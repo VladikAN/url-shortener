@@ -2,11 +2,14 @@ package db
 
 import (
 	"encoding/binary"
+	"sync"
 	"time"
 
 	"github.com/boltdb/bolt"
 	"github.com/vladikan/url-shortener/logger"
 )
+
+var mux sync.Mutex
 
 // Open will open bolt db connection
 func Open() *ServerDb {
@@ -52,7 +55,7 @@ func (db ServerDb) Read(key uint64) string {
 
 // Write will store new key-value pair
 func (db ServerDb) Write(value string) (uint64, error) {
-	db.mux.Lock()
+	mux.Lock()
 
 	var id uint64
 	err := db.db.Update(func(tx *bolt.Tx) error {
@@ -64,7 +67,7 @@ func (db ServerDb) Write(value string) (uint64, error) {
 		return err
 	})
 
-	db.mux.Unlock()
+	mux.Unlock()
 
 	return id, err
 }
