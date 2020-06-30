@@ -1,7 +1,7 @@
 # Build image definition
 FROM golang:1.14 AS builder
 WORKDIR /src/
-COPY src/ .
+COPY . .
 RUN go test ./...
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
 
